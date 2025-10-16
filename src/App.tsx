@@ -32,7 +32,7 @@ export const App: React.FC = () => {
   const [serverLoading, setServerLoading] = useState(false);
   const [loadingItem, setLoadingItem] = useState<Todo | null>(null);
   const [todoDelete, setTodoDelete] = useState<boolean>(false);
-  const [clearStatys, clearClearStatys] = useState(false);
+  const [clearStatys, setClearStatys] = useState(false);
 
   const todoCompleteList = filteredTodos(todoList, stateTodo);
 
@@ -141,7 +141,7 @@ export const App: React.FC = () => {
   };
 
   const clearComplete = () => {
-    clearClearStatys(true);
+    setClearStatys(true);
 
     const completedTodos = todoList.filter(todo => todo.completed);
 
@@ -163,7 +163,7 @@ export const App: React.FC = () => {
         timerClierErrorMessege(setErrorMessage);
       }
 
-      clearClearStatys(false);
+      setClearStatys(false);
     });
   };
 
