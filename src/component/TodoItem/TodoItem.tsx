@@ -31,8 +31,6 @@ export const TodoItem: React.FC<Props> = ({
     setSelected(idSelected);
   };
 
-  // console.log(`select' = ${selected}`);
-
   return (
     <div
       data-cy="Todo"

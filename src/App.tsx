@@ -9,22 +9,26 @@ import { Headers } from './component/Headers/Headers';
 import { Footer } from './component/Footer/Footer';
 import { timerClierErrorMessege } from './utils/fetchClient';
 import { ErrorType } from './types/errorType';
+import { FilterType } from './types/filterType';
 
-function filteredTodos(todos: Todo[], completed?: boolean) {
-  let newTodosList = [...todos];
+function filteredTodos(todos: Todo[], filter: string) {
+  switch (filter) {
+    case FilterType.Active:
+      return todos.filter(todo => !todo.completed);
 
-  if (completed !== undefined) {
-    newTodosList = newTodosList.filter(todo => todo.completed === completed);
+    case FilterType.Completed:
+      return todos.filter(todo => todo.completed);
+
+    default:
+      return todos;
   }
-
-  return newTodosList;
 }
 
 export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [stateTodo, setStateTodo] = useState<boolean | undefined>();
+  const [stateTodo, setStateTodo] = useState('');
   const [serverLoading, setServerLoading] = useState(false);
   const [loadingItem, setLoadingItem] = useState<Todo | null>(null);
   const [todoDelete, setTodoDelete] = useState<boolean>(false);

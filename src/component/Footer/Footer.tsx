@@ -1,11 +1,12 @@
 import React from 'react';
 import cn from 'classnames';
+import { FilterType } from '../../types/filterType';
 
 type Props = {
   hasCompletedTodo?: boolean;
   itemLeft: number;
-  stateTodo: boolean | undefined;
-  setStateTodo: (state: boolean | undefined) => void;
+  stateTodo: string;
+  setStateTodo: (state: string) => void;
   clearComplete: () => void;
 };
 
@@ -27,10 +28,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: stateTodo === undefined,
+            selected: !stateTodo,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => setStateTodo(undefined)}
+          onClick={() => setStateTodo(FilterType.All)}
         >
           All
         </a>
@@ -38,10 +39,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: stateTodo === false,
+            selected: stateTodo === FilterType.Active,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => setStateTodo(false)}
+          onClick={() => setStateTodo(FilterType.Active)}
         >
           Active
         </a>
@@ -49,10 +50,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: stateTodo === true,
+            selected: stateTodo === FilterType.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setStateTodo(true)}
+          onClick={() => setStateTodo(FilterType.Completed)}
         >
           Completed
         </a>
