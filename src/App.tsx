@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todoServise from './api/todos';
-import cn from 'classnames';
 
 import { Todo } from './types/Todo';
 import { TodoList } from './component/TodoList/TodoList';
@@ -10,6 +9,7 @@ import { Footer } from './component/Footer/Footer';
 import { timerClierErrorMessege } from './utils/fetchClient';
 import { ErrorType } from './types/errorType';
 import { FilterType } from './types/filterType';
+import { ErrorMessage } from './component/ErrorMessege/ErrorMessage';
 
 function filteredTodos(todos: Todo[], filter: string) {
   switch (filter) {
@@ -138,17 +138,23 @@ export const App: React.FC = () => {
     }
   };
 
-  const clearComplete = async () => {
+  const clearComplete = () => {
     const completedTodos = todoList.filter(todo => todo.completed);
 
-    for (const todo of completedTodos) {
-      try {
-        await todoServise.deleteTodos(todo.id);
-        setTodoList(currentList => currentList.filter(t => t.id !== todo.id));
-      } catch (error) {
+    Promise.all(
+      completedTodos.map(todo =>
+        todoServise.deleteTodos(todo.id).then(() => todo.id),
+      ),
+    )
+      .then(deleteId => {
+        setTodoList(currentList =>
+          currentList.filter(todo => !deleteId.includes(todo.id)),
+        );
+      })
+      .catch(error => {
         setErrorMessage(ErrorType.Delete);
-      }
-    }
+        throw error;
+      });
   };
 
   return (
@@ -187,18 +193,7 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification is-danger is-light has-text-weight-normal',
-          {
-            hidden: !errorMessage,
-          },
-        )}
-      >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {errorMessage}
-      </div>
+      <ErrorMessage message={errorMessage} />
     </div>
   );
 };
