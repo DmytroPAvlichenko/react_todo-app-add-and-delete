@@ -9,6 +9,7 @@ type Props = {
   loading: boolean;
   todoDelete: boolean;
   tempTodo: Todo | null;
+  clearTodoComplete: boolean;
   deleteTodos: (todoId: number) => Promise<unknown>;
   completed: (todoId: number) => Promise<Todo> | undefined;
 };
@@ -18,6 +19,7 @@ export const TodoList: React.FC<Props> = ({
   todoList,
   loading,
   tempTodo,
+  clearTodoComplete,
   deleteTodos,
   completed,
 }) => {
@@ -27,9 +29,10 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           todo={todo}
           key={todo.id}
+          todoDelete={todoDelete}
+          clearTodoComplete={clearTodoComplete}
           deleteTodos={() => deleteTodos(todo.id)}
           cheketCompleted={() => completed(todo.id)}
-          todoDelete={todoDelete}
         />
       ))}
 

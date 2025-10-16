@@ -7,6 +7,7 @@ import cn from 'classnames';
 type Props = {
   todo: Todo;
   todoDelete: boolean;
+  clearTodoComplete: boolean;
   deleteTodos: (todoId: number) => Promise<unknown>;
   cheketCompleted: (todoId: number) => Promise<Todo> | undefined;
 };
@@ -14,6 +15,7 @@ type Props = {
 export const TodoItem: React.FC<Props> = ({
   todo: { title, id, completed },
   todoDelete,
+  clearTodoComplete,
   deleteTodos,
   cheketCompleted,
 }) => {
@@ -84,7 +86,9 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': id === deleteId && todoDelete,
+          'is-active':
+            (id === deleteId && todoDelete) ||
+            (completed === true && clearTodoComplete),
         })}
       >
         <div className="modal-background has-background-white-ter" />

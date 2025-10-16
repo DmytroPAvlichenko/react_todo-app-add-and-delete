@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [serverLoading, setServerLoading] = useState(false);
   const [loadingItem, setLoadingItem] = useState<Todo | null>(null);
   const [todoDelete, setTodoDelete] = useState<boolean>(false);
+  const [clearStatys, clearClearStatys] = useState(false);
 
   const todoCompleteList = filteredTodos(todoList, stateTodo);
 
@@ -104,6 +105,7 @@ export const App: React.FC = () => {
       .catch(error => {
         setTodoList(currentList => [...currentList]);
         setErrorMessage(ErrorType.Delete);
+        timerClierErrorMessege(setErrorMessage);
         throw error;
       })
       .finally(() => setTodoDelete(false));
@@ -139,22 +141,30 @@ export const App: React.FC = () => {
   };
 
   const clearComplete = () => {
+    clearClearStatys(true);
+
     const completedTodos = todoList.filter(todo => todo.completed);
 
-    Promise.all(
+    Promise.allSettled(
       completedTodos.map(todo =>
         todoServise.deleteTodos(todo.id).then(() => todo.id),
       ),
-    )
-      .then(deleteId => {
-        setTodoList(currentList =>
-          currentList.filter(todo => !deleteId.includes(todo.id)),
-        );
-      })
-      .catch(error => {
+    ).then(rezults => {
+      const successIds = rezults
+        .filter(rezult => rezult.status === 'fulfilled')
+        .map(rezult => (rezult as PromiseFulfilledResult<number>).value);
+
+      setTodoList(currentList =>
+        currentList.filter(todo => !successIds.includes(todo.id)),
+      );
+
+      if (successIds.length < completedTodos.length) {
         setErrorMessage(ErrorType.Delete);
-        throw error;
-      });
+        timerClierErrorMessege(setErrorMessage);
+      }
+
+      clearClearStatys(false);
+    });
   };
 
   return (
@@ -163,13 +173,13 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Headers
-          todoCompleteList={todoCompleteList}
           handleCompletedAll={handleCompletedAll}
-          completedAll={completedAll}
-          handleSubmit={handleSubmit}
-          title={title}
           setTitle={value => setTitle(value)}
+          handleSubmit={handleSubmit}
+          todoCompleteList={todoCompleteList}
+          completedAll={completedAll}
           serverLoading={serverLoading}
+          title={title}
         />
 
         {todoList.length > 0 && (
@@ -177,6 +187,7 @@ export const App: React.FC = () => {
             <TodoList
               deleteTodos={deleteTodo}
               completed={handleCompleted}
+              clearTodoComplete={clearStatys}
               todoDelete={todoDelete}
               todoList={todoCompleteList}
               loading={serverLoading}
